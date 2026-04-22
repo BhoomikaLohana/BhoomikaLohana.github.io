@@ -1097,7 +1097,8 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 900px) {
-  .nav-links { display: none; }
+  .nav { padding: 1rem 1.25rem; }
+  .nav-links { gap: 1.25rem; font-size: 0.88rem; }
   .hero {
     grid-template-columns: 1fr;
     gap: 3rem;
