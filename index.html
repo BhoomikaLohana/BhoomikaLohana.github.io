@@ -5,34 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bhoomi — Personal Website</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <main class="container">
-    <header>
-      <h1>Hi, I'm Bhoomi</h1>
-      <p class="tagline">Welcome to my corner of the internet.</p>
-    </header>
 
-    <section>
-      <h2>About</h2>
-      <p>
-        I'm building this site to share what I'm working on, writing, and
-        thinking about. More coming soon.
-      </p>
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Hi, I'm Bhoomi</h1>
+        <p class="tagline">Welcome to my corner of the internet.</p>
+
+        <section class="simple-section">
+          <h2>About</h2>
+          <p>
+            I'm building this site to share what I'm working on, writing, and
+            thinking about. More coming soon.
+          </p>
+        </section>
+
+        <section class="simple-section">
+          <h2>Links</h2>
+          <ul>
+            <li><a href="https://github.com/BhoomikaLohana">GitHub</a></li>
+            <li><a href="mailto:you@example.com">Email</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="hero-visual">
+        <div class="threads" aria-hidden="true">
+          <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="t1" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#c96b3a"/><stop offset="1" stop-color="#8e4a29"/>
+              </linearGradient>
+              <linearGradient id="t2" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#6d8d85"/><stop offset="1" stop-color="#3f5a55"/>
+              </linearGradient>
+              <linearGradient id="t3" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#d9b678"/><stop offset="1" stop-color="#9a7a44"/>
+              </linearGradient>
+              <linearGradient id="t4" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#b85b4a"/><stop offset="1" stop-color="#6e2f26"/>
+              </linearGradient>
+            </defs>
+            <path d="M20,50 C120,180 280,160 380,320 S420,480 350,500" stroke="url(#t1)" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M10,120 C140,260 300,220 390,400" stroke="url(#t2)" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M30,200 C160,320 280,290 370,460" stroke="url(#t3)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M40,30 C180,140 260,260 395,250" stroke="url(#t4)" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M5,300 C150,380 240,360 380,350" stroke="url(#t2)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+            <path d="M60,10 C150,80 240,40 395,120" stroke="url(#t1)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+          </svg>
+        </div>
+
+        <div class="cube-stage">
+          <div class="cube-halo"></div>
+          <div class="cube" id="cube">
+            <div class="face front">
+              <span class="st s1"></span><span class="st s2"></span><span class="st s3"></span>
+              <span class="st s4"></span><span class="st s5"></span><span class="st s6"></span>
+              <span class="st s7"></span><span class="st s8"></span><span class="st s9"></span>
+            </div>
+            <div class="face back">
+              <span class="st s1"></span><span class="st s2"></span><span class="st s3"></span>
+              <span class="st s4"></span><span class="st s5"></span><span class="st s6"></span>
+              <span class="st s7"></span><span class="st s8"></span><span class="st s9"></span>
+            </div>
+            <div class="face right">
+              <span class="st s1"></span><span class="st s2"></span><span class="st s3"></span>
+              <span class="st s4"></span><span class="st s5"></span><span class="st s6"></span>
+              <span class="st s7"></span><span class="st s8"></span><span class="st s9"></span>
+            </div>
+            <div class="face left">
+              <span class="st s1"></span><span class="st s2"></span><span class="st s3"></span>
+              <span class="st s4"></span><span class="st s5"></span><span class="st s6"></span>
+              <span class="st s7"></span><span class="st s8"></span><span class="st s9"></span>
+            </div>
+            <div class="face top">
+              <span class="st s1"></span><span class="st s2"></span><span class="st s3"></span>
+              <span class="st s4"></span><span class="st s5"></span><span class="st s6"></span>
+              <span class="st s7"></span><span class="st s8"></span><span class="st s9"></span>
+            </div>
+            <div class="face bottom">
+              <span class="st s1"></span><span class="st s2"></span><span class="st s3"></span>
+              <span class="st s4"></span><span class="st s5"></span><span class="st s6"></span>
+              <span class="st s7"></span><span class="st s8"></span><span class="st s9"></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-
-    <section>
-      <h2>Links</h2>
-      <ul>
-        <li><a href="https://github.com/BhoomikaLohana">GitHub</a></li>
-        <li><a href="mailto:you@example.com">Email</a></li>
-      </ul>
-    </section>
-
-    <footer>
-      <p>&copy; <span id="year"></span> Bhoomi</p>
-    </footer>
   </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Bhoomi</p>
+  </footer>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
