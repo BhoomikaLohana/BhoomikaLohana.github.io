@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bhoomi — Personal Website</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Hi, I'm Bhoomi</h1>
+      <p class="tagline">Welcome to my corner of the internet.</p>
+    </header>
+
+    <section>
+      <h2>About</h2>
+      <p>
+        I'm building this site to share what I'm working on, writing, and
+        thinking about. More coming soon.
+      </p>
+    </section>
+
+    <section>
+      <h2>Links</h2>
+      <ul>
+        <li><a href="https://github.com/BhoomikaLohana">GitHub</a></li>
+        <li><a href="mailto:you@example.com">Email</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>&copy; <span id="year"></span> Bhoomi</p>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
