@@ -2,7 +2,7 @@
   /* Warm editorial palette */
   --cream:       #f5efe4;
   --cream-deep:  #ece3d3;
-  --cream-card:  #efe7d6;
+  --cream-card:  #e4d5b0;
   --ink:         #2d241c;
   --ink-soft:    #5a4a3c;
   --ink-faint:   #8f7e6c;
@@ -139,12 +139,12 @@ a { color: inherit; text-decoration: none; }
 
 .eyebrow {
   font-family: var(--sans);
-  font-size: 0.75rem;
-  letter-spacing: 0.22em;
+  font-size: 1rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  font-weight: 600;
-  margin: 0 0 1.25rem;
+  color: var(--ink);
+  font-weight: 700;
+  margin: 0 0 1.5rem;
 }
 
 .hero h1 {
@@ -202,7 +202,7 @@ a { color: inherit; text-decoration: none; }
 /* ─── Creative link buttons ──────────────────────────── */
 .link-buttons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.55rem;
   margin-top: 0.9rem;
 }
@@ -325,7 +325,10 @@ a { color: inherit; text-decoration: none; }
   opacity: 1;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+  .link-buttons { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
   .link-buttons { grid-template-columns: 1fr; }
 }
 
