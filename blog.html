@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Bhoomika Lohana</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="logo" aria-hidden="true"></span>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="blog-main">
+    <header class="blog-header">
+      <p class="eyebrow-small">Writing</p>
+      <h1 class="blog-title">Blog</h1>
+      <p class="blog-intro">
+        Notes, experiments, and explanations from my learning in AI and machine learning.
+      </p>
+    </header>
+
+    <section class="post-list">
+
+      <a href="/blog/exploring-the-basics-of-machine-learning.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2025-01-08">January 8, 2025</time>
+          <span class="dot">·</span>
+          <span>8 min read</span>
+        </div>
+        <h2 class="post-card-title">Exploring the Basics of Machine Learning</h2>
+        <p class="post-card-excerpt">
+          A gentle introduction to machine learning — what it is, the three main types
+          (supervised, unsupervised, reinforcement), and the six steps behind every ML model.
+        </p>
+        <span class="post-card-arrow">Read the post →</span>
+      </a>
+
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Bhoomika Lohana</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
