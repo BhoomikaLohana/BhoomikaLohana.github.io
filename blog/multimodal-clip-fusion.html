@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fusion Strategies for Multimodal CLIP Retrieval — Bhoomika Lohana</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Prism.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="logo" aria-hidden="true"></span>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="post-main">
+    <article class="post">
+
+      <a href="/blog.html" class="post-back">← All posts</a>
+
+      <figure class="post-cover">
+        <img src="images/clip-fusion/1.webp" alt="Fusion Strategies for Multimodal CLIP Retrieval — cover">
+      </figure>
+
+      <header class="post-header">
+        <h1 class="post-title">Fusion Strategies for Multimodal CLIP Retrieval</h1>
+        <div class="post-meta">
+          <time datetime="2025-05-15">May 15, 2025</time>
+          <span class="dot">·</span>
+          <span>8 min read</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+
+        <p>In many modern AI applications, especially in search and retrieval, the ability to compare different types of content like text and images depends on one core idea: embeddings. These are fixed-size numerical vectors that capture the semantic meaning of input data. By mapping content into a shared space, embeddings allow us to measure similarity across formats and make meaningful comparisons.</p>
+
+        <p>In my <a href="/blog/clip-cross-modal-retrieval.html">previous blog post</a>, I explored how the CLIP model enables this by embedding both text and images into a common vector space. With CLIP, we can generate embeddings for a sentence, or an image, all aligned so that semantically similar concepts end up close together, regardless of their original format.</p>
+
+        <p>However, real-world items are rarely described by a single piece of information. A typical product, for example, may come with a title, a more detailed description, and a representative image. Each of these components highlights different aspects of the same object. This leads to a natural question: How do we combine multiple embeddings into one unified representation that captures the full meaning?</p>
+
+        <p>This is the role of embedding fusion, a process that merges different component embeddings into a single vector used for tasks like semantic search. In this blog, I compare multiple fusion strategies, from simple averages to fixed-weight combinations, and introduce a more adaptive method that dynamically adjusts based on both the structure of the data and the user query. The goal is to understand how fusion choices impact retrieval performance and which strategy delivers the most accurate results.</p>
+
+        <h2>Fusion Strategies for Combining Embeddings:</h2>
+
+        <p>When an item is described by multiple components such as a title, description, and image each can be embedded separately. But for retrieval to work effectively, these individual embeddings need to be fused into a single, unified representation. This is where fusion strategies come in. A fusion method determines how much weight to give each component when forming the final embedding. In this blog, we experiment with three approaches:</p>
+
+        <h3>1. Simple Average Fusion</h3>
+
+        <p>This is the most basic method: all component embeddings are averaged equally. While easy to implement, it assumes every component contributes the same amount of meaning, which isn't always true.</p>
+
+        <p class="formula">fused_avg = 1/3 (title_emb + desc_emb + image_emb)</p>
+
+<pre><code class="language-python">for product in products:
+    product["fused_avg"] = (
+        product["title_emb"] + product["desc_emb"] + product["image_emb"]
+    ) / 3
+</code></pre>
+
+        <p>we're taking the average of the three embeddings by summing them up and then dividing by 3, because there are three components. It's simple and effective in some cases but treats all information sources as equally valuable, regardless of their actual relevance.</p>
+
+        <h3>2. Fixed Weight Fusion</h3>
+
+        <p>In this approach, each component is assigned a predefined weight based on intuition or domain knowledge (e.g., 50% title, 30% description, 20% image). This provides more control but still cannot adjust to the specific needs of a query.</p>
+
+        <p class="formula">fused_weighted = wt⋅title_emb + wd⋅desc_emb +n wi⋅image_emb</p>
+
+<pre><code class="language-python">w_title = 0.5
+w_desc  = 0.3
+w_image = 0.2
+
+for product in products:
+    product["fused_weighted"] = (
+        w_title * product["title_emb"] +
+        w_desc  * product["desc_emb"] +
+        w_image * product["image_emb"]
+    )
+</code></pre>
+
+        <p>This gives more control than averaging, but the weights remain static and don't change based on the query.</p>
+
+        <h3>3. Hybrid Global-Local Fusion</h3>
+
+        <p>Unlike simple or fixed fusion methods, hybrid global-local fusion dynamically adjusts the importance of each component (title, description, image) based on two factors:</p>
+
+        <ul>
+          <li><strong>Global Weight (Gᵢ)</strong> — How consistent a component is across the dataset</li>
+          <li><strong>Local Weight (Lᵢ)</strong> — How relevant a component is to the specific user query</li>
+        </ul>
+
+        <p>The goal is to give more influence to the parts of an item that are both reliable and relevant. For each component, it computes pairwise cosine similarity and averages the result.</p>
+
+        <h4>Step 1 — Global Weight (Gᵢ)</h4>
+
+        <p>A global weight reflects how consistent or reliable a component is across all items in the dataset. The idea is: that if a component (e.g., description) is semantically richer and more aligned across items than others, it should be given more weight regardless of the query.</p>
+
+<pre><code class="language-python">def compute_global_weight(products, key):
+    embeddings = torch.stack([p[key] for p in products])
+    sims = cosine_similarity(embeddings.unsqueeze(1), embeddings.unsqueeze(0), dim=2)
+    avg_sim = sims.mean(dim=1)
+    return avg_sim.mean().item()
+</code></pre>
+
+        <p>Suppose across all products:</p>
+
+        <ul>
+          <li>Descriptions are usually detailed and meaningful</li>
+          <li>Titles are short and vague</li>
+          <li>Images vary in quality</li>
+        </ul>
+
+        <p>Then:</p>
+
+        <ul>
+          <li>G_desc might be 0.45</li>
+          <li>G_title might be 0.25</li>
+          <li>G_image might be 0.30</li>
+        </ul>
+
+        <p>So globally, descriptions are the most semantically reliable.</p>
+
+        <h4>Local Weight (Lᵢ) — Query-Specific Relevance</h4>
+
+        <p>A local weight measures how relevant each component of a specific item is to the current query. It answers: "For this specific item and this specific query, which component is most aligned with what the user is looking for?"</p>
+
+        <p><strong>Example:</strong></p>
+
+        <p>Query: <em>"Eco-friendly running shoes made of eucalyptus fiber"</em></p>
+
+        <p>For a product like Allbirds:</p>
+
+        <ul>
+          <li>Its description mentions eucalyptus → high similarity</li>
+          <li>Its title just says "Tree Dashers" → low similarity</li>
+          <li>Its image shows a sustainable-looking shoe → moderate similarity</li>
+        </ul>
+
+        <p>Then:</p>
+
+        <ul>
+          <li>L_desc might be 0.6 (description contains key terms)</li>
+          <li>L_image might be 0.3 (image is moderately relevant)</li>
+          <li>L_title might be 0.1 (title doesn't help much)</li>
+        </ul>
+
+        <h4>Final Fusion Weights</h4>
+
+        <p>Once we've computed the global weights (how consistent each component is across the dataset) and the local weights (how relevant each component is to the current query), we combine them to compute the final fusion weight for each component.</p>
+
+        <p>This is done by multiplying the global and local weights:</p>
+
+        <p class="formula">Wᵢ = Gᵢ × Lᵢ</p>
+
+        <p>Where:</p>
+
+        <ul>
+          <li>Gᵢ is the global weight for component <em>i</em> (title, description, or image)</li>
+          <li>Lᵢ is the local weight for that same component based on the query</li>
+        </ul>
+
+        <p>After multiplying, we normalize the resulting weights so they sum to 1:</p>
+
+        <p class="formula">w_i = (Gᵢ × Lᵢ) / (G_title × L_title + G_desc × L_desc + G_image × L_image)</p>
+
+        <p>These final weights determine how much influence each component will have in the fused embedding. The more relevant and consistent a component is, the higher its contribution. Finally, we use these normalized weights to compute the fused embedding, a weighted combination of all three component embeddings:</p>
+
+<pre><code class="language-python">product["fused_hybrid"] = (
+    w_title * product["title_emb"] +
+    w_desc  * product["desc_emb"] +
+    w_image * product["image_emb"]
+)
+</code></pre>
+
+        <p>This fused vector is a query-aware and context-sensitive representation of the product. It reflects not just what the item is made of, but what matters most for this particular search, resulting in significantly improved retrieval performance compared to static methods.</p>
+
+        <h2>Experiment Design and Setup</h2>
+
+        <p>To evaluate the performance of different fusion strategies, I designed a small experiment using a carefully selected set of five running shoe products. Each product was described using three components: a title, a more detailed description, and an image. These components were chosen because they reflect the way real-world items are typically presented in online catalogs, each offering a different perspective on the product's identity.</p>
+
+        <p>To process this multimodal data, I used the OpenAi CLIP model from Hugging Face. This model is capable of embedding both text and images into a shared vector space, which makes it ideal for cross-modal retrieval tasks. I used CLIP to separately generate embeddings for each product's title, description, and image. All embeddings were normalized using L2 normalization to ensure consistent scale and fair cosine similarity comparisons. Here's a simplified view of how each component was processed:</p>
+
+<pre><code class="language-python"># === Embedding Generation ===
+for product in products:
+    # Title
+    title_input = processor(text=[product["title"]], return_tensors="pt", padding=True).to(device)
+    with torch.no_grad():
+        title_emb = model.get_text_features(**title_input)
+        title_emb = F.normalize(title_emb, p=2, dim=1).squeeze(0)
+
+    # Description
+    desc_input = processor(text=[product["description"]], return_tensors="pt", padding=True).to(device)
+    with torch.no_grad():
+        desc_emb = model.get_text_features(**desc_input)
+        desc_emb = F.normalize(desc_emb, p=2, dim=1).squeeze(0)
+
+    # Image
+    image = Image.open(product["image_path"]).convert("RGB")
+    image_input = processor(images=image, return_tensors="pt").to(device)
+    with torch.no_grad():
+        image_emb = model.get_image_features(**image_input)
+        image_emb = F.normalize(image_emb, p=2, dim=1).squeeze(0)
+</code></pre>
+
+        <p>To test how well each fusion strategy could match a user's intent, I created five natural-language queries that reflect different search goals:</p>
+
+        <ul>
+          <li>"eco-friendly running shoes made of eucalyptus fiber"</li>
+          <li>"lightweight shoes for daily road running"</li>
+          <li>"high-performance sneakers with energy return"</li>
+          <li>"budget-friendly shoes with comfort and support"</li>
+          <li>"shoes for stability and structured foot support"</li>
+        </ul>
+
+        <p>Each query was embedded using the same CLIP model and compared against the fused embeddings of the five products using cosine similarity. By evaluating which product each fusion strategy ranked highest for a given query and how strong the similarity score was, I could assess not only which method performed best, but also why.</p>
+
+        <h2>Results &amp; Analysis</h2>
+
+        <p>I tested all five fusion strategies using a set of five natural language queries, each targeting different product attributes. For every query, I evaluated which product was selected as the best match by each fusion method and compared their similarity scores. The results revealed a clear trend: Hybrid Global-Local Fusion consistently outperformed both Simple Average and Fixed Weight Fusion, retrieving the correct product with noticeably higher confidence.</p>
+
+        <div class="post-table-wrap">
+        <table class="post-table">
+          <thead>
+            <tr>
+              <th>Query</th>
+              <th>Avg Fusion</th>
+              <th>Fixed Fusion</th>
+              <th>Hybrid Fusion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>eco-friendly running shoes made of eucalyptus fiber</td>
+              <td>Allbirds Tree Dashers (0.7856)</td>
+              <td>Allbirds Tree Dashers (0.7888)</td>
+              <td>Allbirds Tree Dashers (0.8975)</td>
+            </tr>
+            <tr>
+              <td>lightweight shoes for daily road running</td>
+              <td>Reebok Floatride Energy 4 (0.8217)</td>
+              <td>Reebok Floatride Energy 4 (0.8448)</td>
+              <td>Reebok Floatride Energy 4 (0.9042)</td>
+            </tr>
+            <tr>
+              <td>high-performance sneakers with energy return</td>
+              <td>Reebok Floatride Energy 4 (0.8237)</td>
+              <td>Reebok Floatride Energy 4 (0.8570)</td>
+              <td>Reebok Floatride Energy 4 (0.8944)</td>
+            </tr>
+            <tr>
+              <td>budget-friendly shoes with comfort and support</td>
+              <td>Reebok Floatride Energy 4 (0.8003)</td>
+              <td>Reebok Floatride Energy 4 (0.8293)</td>
+              <td>Reebok Floatride Energy 4 (0.8844)</td>
+            </tr>
+            <tr>
+              <td>shoes for stability and structured foot support</td>
+              <td>Reebok Floatride Energy 4 (0.7886)</td>
+              <td>Reebok Floatride Energy 4 (0.8232)</td>
+              <td>Reebok Floatride Energy 4 (0.8641)</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>While all three fusion strategies often selected the correct product, the Hybrid Fusion method consistently delivered higher similarity scores, indicating greater confidence in the match. Both the average and fixed-weight methods performed reasonably well in this small, controlled setting, sometimes even retrieving the same product as hybrid fusion.</p>
+
+        <p>However, these static approaches treat all components equally or based on pre-assigned weights and lack the ability to adapt. As the dataset scales with more products, more variability in component quality, and more diverse queries this limitation becomes critical. In contrast, the hybrid strategy dynamically adjusts based on both the global consistency of each component and its query-specific relevance, making it far more robust and scalable for real-world retrieval systems.</p>
+
+        <p>If you'd like to explore the code, run the experiments yourself, or build on this idea, feel free to check out the complete implementation here: <a href="https://github.com/BhoomikaLohana/My-Path-to-understand-ML/tree/main/Fusion" target="_blank" rel="noopener noreferrer">Github repo</a>.</p>
+
+      </div>
+
+      <footer class="post-footer">
+        <a href="/blog.html" class="post-back">← All posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Bhoomika Lohana</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <!-- Prism.js (syntax highlighting + copy button) -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+</body>
+</html>
