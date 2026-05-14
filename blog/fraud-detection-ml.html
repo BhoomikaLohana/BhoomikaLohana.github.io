@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fraud Detection using Machine Learning — Bhoomika Lohana</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Prism.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="logo" aria-hidden="true"></span>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="post-main">
+    <article class="post">
+
+      <a href="/blog.html" class="post-back">← All posts</a>
+
+      <figure class="post-cover">
+        <img src="images/fraud-detection/cover.webp" alt="Fraud Detection using Machine Learning — cover">
+      </figure>
+
+      <header class="post-header">
+        <h1 class="post-title">Fraud Detection using Machine Learning</h1>
+        <div class="post-meta">
+          <time datetime="2025-05-06">May 6, 2025</time>
+          <span class="dot">·</span>
+          <span>13 min read</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+
+        <p>The banking industry processes billions of transactions daily, making it a major target for fraudulent activities. Traditional fraud detection methods—rule-based systems, manual reviews by fraud analysts, or static thresholds with fixed limits—often fall short in identifying complex fraud schemes.</p>
+
+        <p>This is where Machine Learning comes into play. By analyzing transactional data, customer behavior, and account patterns, machine learning enables banks to detect fraud in real-time with remarkable accuracy.</p>
+
+        <p>In this blog post, we'll explore how machine learning models can analyze financial data, identify fraudulent transactions, and enhance the overall security of banking systems.</p>
+
+        <h2>Objective of the project</h2>
+
+        <p>The objective of this project is to detect fraudulent transactions in banking systems using Machine Learning techniques and advanced statistical methods. We aim to classify transactions as fraudulent or non-fraudulent with high accuracy by applying a series of techniques.</p>
+
+        <p>We start by using <strong>K-Means Clustering</strong> to identify irregularities by analyzing distances from cluster centroids. Then, <strong>DBSCAN</strong> is applied to flag suspicious transactions based on density. Next, <strong>Z-Score Analysis</strong> helps detect extreme statistical outliers, followed by <strong>Isolation Forest</strong> to pinpoint transactions that deviate significantly from normal patterns. Finally, <strong>Logistic Regression</strong> is used as a supervised learning model to classify transactions based on historical data.</p>
+
+        <p>By combining these methods, we aim to develop a robust and effective fraud detection solution. The results from all models will be integrated to create a clear and accurate list of fraudulent transactions, ensuring that no suspicious activity is overlooked and providing a reliable solution.</p>
+
+        <h2>Project Workflow</h2>
+
+        <p>This section will cover all the steps taken to execute the project.</p>
+
+        <h3>Step 1: Dataset Overview</h3>
+
+        <p>This dataset contains 2,512 transaction records, which can be used to detect fraud and identify unusual patterns. It includes details about the transactions, such as the Amount, Type, and Date, as well as information about the Customer, like Age and Occupation. Other features, like Account balance, Device ID, Location, and IP address, help in identifying fraudulent activity.</p>
+
+        <h3>Step 2: Data Preprocessing</h3>
+
+        <p>After loading the data, the first step is to clean it. This includes handling missing values by filling or removing them, depending on the situation. Next, I ensured that each feature had the correct data type (e.g., converting Transaction date and previous transaction to datetime datatype). To understand the data deeply i generated information of data and summary statistics which helped me identify outliers, potential errors, and patterns that might influence model performance.</p>
+
+        <p>Next before working on models it's important to standardize the data on the same scale, for that I applied standardization to the numerical features to ensure that all the features are on the same scale. This step ensures that features with larger scales do not dominate the learning process, leading to more balanced and effective model performance.</p>
+
+        <p>For categorical variables in data like Transaction type, location, Transaction Channel, and customer occupation, One-hot encoding is used to convert them into numerical format to make them understandable to Machine learning algorithms. It creates separate binary columns for each category in a feature, which allows the model to handle categorical variables without suggesting any specific order or value to the categories.</p>
+
+        <h3>Step 3: Exploratory Data Analysis (EDA)</h3>
+
+        <p>Before diving into machine learning models, I conducted Exploratory Data Analysis (EDA) to understand the distribution of data and visualize key patterns. Below are some key steps I took:</p>
+
+        <h4>1. Univariate Analysis</h4>
+
+        <p>I started by examining the distribution of individual features. For example, I plotted a histogram and a boxplot for Account balance to visualize its distribution and spot any outliers by using Boxplot.</p>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/1.png" alt="Histogram and boxplot of Account balance">
+        </figure>
+
+        <p>The histogram shows a right-skewed distribution, with most account balances between 2,500 and 10,000. The boxplot confirms this range and shows no significant outliers.</p>
+
+        <p><strong>Summary of Additional findings from Univariate Analysis:</strong></p>
+
+        <p><strong>Transaction Amount:</strong> The histogram shows a right-skewed distribution, with most transactions below 500. The boxplot confirms this, highlighting several outliers above 1,000, indicating occasional high-value transactions.</p>
+
+        <p><strong>Customer Age:</strong> The histogram reveals a near-uniform distribution, with most customers aged between 30 and 70. The boxplot supports this, showing no significant outliers in the age range.</p>
+
+        <p><strong>Transaction Duration:</strong> The histogram displays a right-skewed distribution, with most transactions completed within 50 to 200 seconds. The boxplot aligns with this observation and shows no outliers.</p>
+
+        <p><strong>Login Attempts:</strong> The histogram indicates most users attempt to log in only once, with decreasing frequency for higher attempts, while the boxplot highlights a few rare cases of multiple login attempts.</p>
+
+        <h4>2. Bivariate Analysis</h4>
+
+        <p>In the Bivariate Analysis, I explored the relationships between pairs of variables. For instance, the bar graph below shows how the transaction types (Debit and Credit) vary across different channels (ATM, Online, and Branch).</p>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/2.png" alt="Bar graph showing transaction types across channels">
+        </figure>
+
+        <p>The plot shows that Debit transactions are far more common than Credit transactions across all channels (ATM, Online, and Branch). Credit transactions are most frequent at branches, followed by online and then ATMs.</p>
+
+        <p><strong>Summary of Additional findings from Bivariate Analysis:</strong></p>
+
+        <ul>
+          <li>The Heatmap shows a moderate positive correlation between Account balance and Customer age (r = 0.32). This suggests that older customers tend to have higher account balances.</li>
+          <li>Both debit and credit transactions have outliers, representing transactions with unusually high or low amounts compared to the majority.</li>
+          <li>For transaction amounts by channel, Online transactions have the highest median at $350, followed by Branch at $300 and ATM at $250. ATM transactions are more consistent, while Online transactions show more variation in spending.</li>
+        </ul>
+
+        <h3>Step 4: Applying Machine Learning Models</h3>
+
+        <p>Once the data was cleaned and analyzed, the next step was to use machine learning to spot fraudulent transactions. The goal was to classify each transaction as either fraudulent or Non fradulent, using a mix of both supervised and unsupervised learning methods.</p>
+
+        <p>In this section, I'll walk you through the machine learning models I used, how I applied them, and what results they produced.</p>
+
+        <h4>1. K-Means Clustering Model</h4>
+
+        <p>K-Means is an unsupervised learning algorithm that groups data into clusters based on their similarities. In this project, it was used to identify patterns in transactions and detect anomalies that could indicate fraud. Fraudulent transactions are expected to fall into smaller, distinct clusters, different from the majority of normal transactions.</p>
+
+        <p>For this project, I applied K-Means Clustering to the transaction data after preprocessing it using Scikit-learn's StandardScaler, which included standardizing (mean of 0 and standard deviation of 1) numerical features ensuring that features with larger ranges, like account balances, don't dominate the clustering process over smaller-scale features, like transaction durations, and One-hot encoding for categorical variables. Then, I chose the optimal number of clusters (k) using the Elbow Method, which helps find the optimal number of clusters in K-Means clustering by plotting the within-cluster sum of squares (WSS) against different values of k. As the number of clusters increases, WSS decreases, but at a certain point, the decrease slows down, forming an "elbow" in the graph. The k value at this elbow is considered optimal. In our case, the elbow was observed at k = 5, indicating that five clusters are ideal for our dataset.</p>
+
+<pre><code class="language-python">from sklearn.cluster import KMeans
+# Perform K-Means clustering
+kmeans = KMeans(n_init='auto')
+kmeans.fit(numeric_scaled)
+n_clusters = 5
+kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+kmeans_labels = kmeans.fit_predict(numeric_scaled)
+df['KMeans_Cluster'] = kmeans_labels
+
+# Calculate distances from centroids
+centroids = kmeans.cluster_centers_
+distances = np.linalg.norm(numeric_scaled.values - centroids[kmeans_labels], axis=1)
+df['KMeans_Distance'] = distances
+
+# Set threshold: Mean + 3 * Standard Deviation
+threshold = distances.mean() + 3 * distances.std()
+df['KMeans_Fraud'] = distances > threshold
+</code></pre>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/3.png" alt="K-Means clustering scatter plot with centroids and outliers">
+        </figure>
+
+        <p><strong>Result:</strong></p>
+
+        <p>The scatter plot generated for K-Means Clustering clearly illustrates the 5 clusters, each represented by different colors. The green crosses denote the centroids of these clusters, while transactions with larger distances from the centroids are highlighted as outliers (depicted as red dots). These red dots represent unusual transactions that deviate significantly from normal patterns, which are potential fraudulent activities.</p>
+
+        <p><strong>Total Fraudulent Transactions Detected (Using K-Means Clustering): 20</strong></p>
+
+        <h4>2. DBSCAN Model</h4>
+
+        <p>Density-Based Spatial Clustering of Applications with Noise (DBSCAN) is an unsupervised learning algorithm that identifies clusters based on the density of data points. It groups together points that are closely packed while marking points in low-density regions as outliers. Unlike K-Means, it does not require specifying the number of clusters beforehand. This flexibility makes DBSCAN especially effective in identifying noise (outliers) in datasets. For this project, DBSCAN was applied to detect fraudulent transactions by flagging points that deviated significantly from dense clusters of normal activity.</p>
+
+<pre><code class="language-python">from sklearn.cluster import DBSCAN
+# Apply DBSCAN
+dbscan = DBSCAN(eps=1.2, min_samples=5)
+dbscan_labels = dbscan.fit_predict(X_scaled)
+df['DBSCAN_Cluster'] = dbscan_labels
+
+# Flag fraud points (noise points are labeled -1)
+df['DBSCAN_Fraud'] = df['DBSCAN_Cluster'] == -1
+
+# Extract fraudulent transactions
+dbscan_fraud_points = df[df['DBSCAN_Fraud']]
+</code></pre>
+
+        <p>DBSCAN uses two main parameters: epsilon (the maximum distance between two points to be considered neighbors) and min samples (the minimum number of points required to form a dense region).</p>
+
+        <p>I used a K-Nearest Neighbors (KNN) graph to find the best value for ε. The graph showed an "elbow point" at 1.2, which is the ideal distance for clustering dense regions of transactions. After selecting e=1.2 and setting min samples=5, I applied the DBSCAN algorithm. This approach efficiently clusters transactions and marks those in low-density areas as outliers. After selecting e=1.2 and setting min samples=5, I applied the DBSCAN algorithm. This approach efficiently clusters transactions and marks those in low-density areas as outliers.</p>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/4.png" alt="DBSCAN scatter plot highlighting outliers as red dots">
+        </figure>
+
+        <p><strong>Result:</strong></p>
+
+        <p>The scatter plot generated using DBSCAN highlights distinct clusters of transactions, and Outliers (or noise points) are flagged as red dots in the plot. These outliers represent transactions that deviate significantly from dense clusters, indicating potential fraud. DBSCAN identified 40 suspicious transactions, including many in less dense areas of the data that other models might miss. This shows how DBSCAN is useful for finding outliers based on data density instead of just distance.</p>
+
+        <h4>3. Z-Score Analysis</h4>
+
+        <p>Z-Score Analysis is a statistical method used to identify outliers by measuring how far a data point deviates from the mean in terms of standard deviations. This method is particularly useful for detecting anomalies in continuous variables. For this project Z-Score Analysis is used to identify transactions that deviate significantly from normal behavior. This method is especially effective for detecting extreme outliers in numerical data.</p>
+
+        <p><strong>Mathematically:</strong></p>
+
+        <p class="formula">Z = (X − μ) / σ</p>
+
+        <p>Where:</p>
+
+        <ul>
+          <li><code>X</code> is the data point,</li>
+          <li><code>μ</code> is the mean, and</li>
+          <li><code>σ</code> is the standard deviation.</li>
+        </ul>
+
+<pre><code class="language-python">from scipy.stats import zscore
+
+# Define numeric columns
+numeric_cols = ['TransactionAmount', 'TransactionDuration', 'LoginAttempts', 'AccountBalance', 'CustomerAge']
+
+# Calculate Z-Scores
+z_scores = np.abs(zscore(df[numeric_cols]))
+df['ZScore_Fraud'] = (z_scores > 3).any(axis=1)
+
+# Extract fraudulent transactions
+zscore_fraud_points = df[df['ZScore_Fraud']]
+</code></pre>
+
+        <p>Transactions were flagged as suspicious if their Z-score exceeded 3, a common threshold for identifying outliers, and these were stored in a new column, Z-Score fraud to store suspicious transaction.</p>
+
+        <p>Features with a Z-score greater than ±3 were flagged as potential outliers and stored in a new column, Z-Score fraud to store suspicious transaction.</p>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/5.png" alt="Z-Score analysis scatter plot showing fraud points">
+        </figure>
+
+        <p><strong>Result:</strong></p>
+
+        <p>In its implication we scaled the feature first and then applied the test on it which gave the result of <strong>Total Fraudulent Transactions Detected by Z-Score Analysis: 140</strong>, these transactions were identified based on their significant deviation from average patterns shown as fraud points on scatter plot.</p>
+
+        <h4>4. Isolation Forest Algorithm</h4>
+
+        <p>Isolation Forest is an unsupervised anomaly detection algorithm designed specifically to identify rare and unusual data points. Unlike other algorithms that model normal data patterns, Isolation Forest focuses on isolating anomalies. It does this by creating random decision trees and measuring how quickly a point can be isolated. Transactions that differ significantly from others—like potential fraud—are isolated faster, making them easier to detect.</p>
+
+        <p>Isolation Forest works by randomly splitting the dataset into smaller subsets using decision trees. Anomalous points, which are fewer and behave differently from normal points, require fewer splits to isolate. Each transaction is assigned an anomaly score based on how many splits were needed to isolate it, with points requiring fewer splits receiving lower scores. Transactions with lower scores are flagged as anomalies, indicating potential fraud.</p>
+
+<pre><code class="language-python">from sklearn.ensemble import IsolationForest
+
+# Apply Isolation Forest
+iso_forest = IsolationForest(contamination=0.02, random_state=42)  # 2% expected anomalies
+iso_forest.fit(numeric_scaled)  # Fit on the scaled numeric data
+
+# Predict anomalies
+df['IsoForest_Score'] = iso_forest.decision_function(numeric_scaled)
+df['IsoForest_Fraud'] = iso_forest.predict(numeric_scaled) == -1  # Mark anomalies (-1) as fraud
+
+# Extract fraudulent transactions
+iso_fraud_points = df[df['IsoForest_Fraud']]
+</code></pre>
+
+        <p>The model was trained on scaled numerical data, including features such as Transaction Amount, Transaction Duration, and Account Balance.</p>
+
+        <p>The Isolation Forest model was initialized with a contamination parameter of 0.02 (indicating 2% anomalies) and fitted on the scaled numeric data. The model then predicted anomalies (labeled as -1) and flagged them as fraudulent transactions.</p>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/6.png" alt="Isolation Forest scatter plot with anomalies marked in red">
+        </figure>
+
+        <p><strong>Results:</strong></p>
+
+        <p>Using Isolation Forest, a total of 51 fraudulent transactions were detected. The algorithm flagged these transactions as anomalies based on their deviation from normal patterns, with visualizations showing these fraud points marked in red on the scatter plot. The flagged transactions were primarily characterized by unusual combinations of transaction amount and account balance. This method effectively identified potential fraudulent activities, including those that other models might have missed, highlighting its usefulness in detecting rare, outlier events in the data.</p>
+
+        <h4>5. Logistic Regression</h4>
+
+        <p>Logistic Regression is a statistical algorithm used to predict a binary outcome (like fraud vs. non-fraud) based on input features. It estimates the probability that a transaction belongs to a specific category (fraud or not) by fitting the data to a logistic function.</p>
+
+        <p>In this analysis, Logistic Regression was applied using features such as transaction amount, account balance, and customer age. The data was standardized for consistency and split into training (70%) and testing (30%) sets. The model was then trained to classify transactions as fraudulent or non-fraudulent.</p>
+
+<pre><code class="language-python"># Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
+
+# Train Logistic Regression model
+log_reg = LogisticRegression(random_state=42)
+log_reg.fit(X_train, y_train)
+
+# Predict fraud on the test set
+y_pred = log_reg.predict(X_test)
+
+# Evaluate model performance
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+# Confusion Matrix
+conf_matrix = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6, 4))
+sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues",
+            xticklabels=['Non-Fraud', 'Fraud'], yticklabels=['Non-Fraud', 'Fraud'])
+plt.title('Confusion Matrix', fontsize=16)
+plt.xlabel('Predicted', fontsize=14)
+plt.ylabel('Actual', fontsize=14)
+plt.show()
+
+# Add predictions to the dataset
+df['LogReg_Fraud'] = log_reg.predict(X_scaled)
+df['Fraud'] |= df['LogReg_Fraud']
+</code></pre>
+
+        <figure class="post-image">
+          <img src="images/fraud-detection/7.png" alt="Confusion matrix for Logistic Regression fraud classification">
+        </figure>
+
+        <p><strong>Result:</strong></p>
+
+        <p>The confusion matrix evaluates the model's predictions:</p>
+
+        <ul>
+          <li><strong>711</strong> transactions were correctly identified as non-fraud (True Negatives).</li>
+          <li><strong>38</strong> transactions were correctly identified as fraud (True Positives).</li>
+          <li><strong>5</strong> transactions were fraud but mistakenly identified as non-fraud (False Negatives).</li>
+          <li><strong>0</strong> transactions were non-fraud but mistakenly identified as fraud (False Positives).</li>
+        </ul>
+
+        <p>In our classification report, the model achieved 99% accuracy, with high precision and recall for fraud detection. This means it effectively flagged fraudulent transactions while minimizing errors. <strong>Total Fraudulent Transactions Detected by Logistic Regression: 140</strong></p>
+
+        <h2>Consolidated Fraud Analysis Result</h2>
+
+        <p>After running my fraud detection models, I found 157 fraudulent transactions in the data. Fraudulent transactions stood out in certain areas, giving useful insights into suspicious activity. To refine the analysis, I identified all Boolean columns in the dataset and used them to calculate a Threat Level for each fraudulent transaction based on the count of True values, indicating suspicious behaviors. I then sorted the transactions by their Threat Level in descending order, highlighting the most potentially fraudulent ones at the top. Finally, I displayed the top rows with the highest Threat Levels to quickly identify and prioritize the most concerning cases.</p>
+
+        <p>To understand the risk levels of transactions better, I created a heatmap for the top 20 transactions with the highest threat levels. The darker the shade on the heatmap, the higher the risk. This visualization makes it easy to focus on the most critical transactions for further investigation.</p>
+
+        <p>The account flagged most often was <code>AC00358</code>, detected 3 times, followed by accounts like <code>AC00071</code>, also flagged 3 times. I identified the top 10 accounts that were flagged multiple times, indicating they might be involved in repeated suspicious activity and need closer attention.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>In this project, I explored the application of machine learning in detecting fraudulent transactions within banking systems. Through a series of supervised and unsupervised techniques, including Logistic Regression, K-Means Clustering, DBSCAN, Z-Score Analysis, and Isolation Forest, I was able to identify fraudulent activities with notable accuracy.</p>
+
+        <p>By combining multiple approaches, I was able to uncover valuable insights into transactional patterns, flag suspicious transactions, and pinpoint accounts with frequent fraudulent activities. The threat level system, based on Boolean values of suspicious behaviors, helped prioritize the most concerning transactions for further investigation, enabling faster and more accurate fraud detection.</p>
+
+        <p>Ultimately, this project demonstrates how machine learning and advanced statistical techniques can significantly enhance the security and efficiency of banking systems. The ability to detect fraud in real time, identify anomalies, and prioritize high-risk transactions has the potential to reduce financial losses, improve customer trust, and strengthen overall banking operations.</p>
+
+        <p>For the complete project, including the code and detailed analysis, visit my <a href="https://github.com/BhoomikaLohana/Banking-Fraud-Detection-Using-Machine-Learning-Algorithm" target="_blank" rel="noopener noreferrer">GitHub Repository</a>.</p>
+
+      </div>
+
+      <footer class="post-footer">
+        <a href="/blog.html" class="post-back">← All posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Bhoomika Lohana</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <!-- Prism.js (syntax highlighting + copy button) -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+</body>
+</html>
