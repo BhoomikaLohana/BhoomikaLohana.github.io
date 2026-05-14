@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLIP for Cross-Modal Retrieval — Bhoomika Lohana</title>
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Prism.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="logo" aria-hidden="true"></span>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog.html" class="active">Blog</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="post-main">
+    <article class="post">
+
+      <a href="/blog.html" class="post-back">← All posts</a>
+
+      <figure class="post-cover">
+        <img src="images/clip-retrieval/cover.webp" alt="CLIP for Cross-Modal Retrieval — cover">
+      </figure>
+
+      <header class="post-header">
+        <h1 class="post-title">CLIP for Cross-Modal Retrieval: From Embedding to Search</h1>
+        <div class="post-meta">
+          <time datetime="2025-05-12">May 12, 2025</time>
+          <span class="dot">·</span>
+          <span>8 min read</span>
+        </div>
+      </header>
+
+      <div class="post-body">
+
+        <p>While working on a recent project, I faced a challenge that seemed simple at first: I needed to generate embeddings for both images and text and use them together for retrieval. But the deeper I went, the more I realized the core issue — the image and text encoders I was using were trained independently and produced embeddings in different spaces. Comparing them directly was like matching puzzle pieces from different sets. Without a shared understanding between the two modalities, retrieval based on meaning simply wasn't working.</p>
+
+        <p>That's when I discovered CLIP, a model designed to solve this exact problem. Unlike traditional models that treat vision and language as separate tasks, CLIP is trained on image-text pairs and learns to map both into the same vector space. This means that instead of relying on exact matches or predefined categories, it aligns images and text based on meaning, allowing them to be compared directly — even when they come from entirely different formats.</p>
+
+        <p>In this blog, we'll explore how CLIP works under the hood — from its dual encoder architecture to the contrastive learning technique that brings the two modalities together. To show its capabilities in action, we'll look at how CLIP can embed both visual and textual inputs and retrieve relevant results across modalities, based purely on semantic similarity rather than labels or fixed vocabularies.</p>
+
+        <h2>What is CLIP?</h2>
+
+        <p>CLIP, which stands for Contrastive Language–Image Pretraining, is a deep learning model developed by OpenAI in 2021. Its key strength lies in producing embeddings for both images and text that share the same space, enabling direct comparisons between the two modalities. This is accomplished by training the model to bring related image–text pairs closer together while pushing unrelated ones apart.</p>
+
+        <p>CLIP moves beyond traditional classification systems by relying on semantic relationships instead of predefined categories or labels. It allows flexible matching between language and visuals, making it suitable for a wide range of open-ended tasks like retrieval, search, and zero-shot classification.</p>
+
+        <h2>Architecture of CLIP</h2>
+
+        <p>At the core of CLIP's architecture are two separate encoders — one for images and one for text — trained together to understand and align both modalities.</p>
+
+        <ul>
+          <li>The <strong>image encoder</strong> in CLIP is usually a Vision Transformer (ViT). Its job is to look at an image and turn it into a fixed-length vector — called an embedding — that captures what's in the image. The Vision Transformer works by breaking the image into small patches (like dividing a picture into pieces), and then learning how these pieces relate to each other. This helps the model understand not just objects and colors, but also the overall scene or feeling of the image.</li>
+          <li>The <strong>text encoder</strong> is a Transformer-based model, similar to those used in popular language models like GPT. It reads a sentence or phrase and creates an embedding that represents the full meaning of the text. Instead of just looking at each word on its own, the model learns how words relate to each other in context — which helps it understand descriptions, emotions, or abstract ideas in the sentence.</li>
+        </ul>
+
+        <h2>How CLIP Works Under the Hood</h2>
+
+        <p>Now that we've seen what CLIP is made of, let's look at how it actually works in practice. How does it take an image and a sentence — two very different types of input — and decide whether they match?</p>
+
+        <p>To understand that, we'll walk through the steps CLIP follows: from creating embeddings, to comparing them, to how it learns to align vision and language in the same space.</p>
+
+        <p>We'll follow along with a working example: imagine we have a collection of images — peaceful beaches, crowded markets, spiritual spaces, urban streets — and we want to search them using a text query like <em>"a peaceful place to be alone."</em> We'll see how CLIP processes these inputs step by step, and how it retrieves only the most semantically relevant results — even without being explicitly trained for this task.</p>
+
+        <h3>Step 1: Embedding the Inputs</h3>
+
+        <p>CLIP begins by converting both text and images into embeddings — numerical vectors that represent their meaning. These embeddings live in the same space, allowing CLIP to compare them directly.</p>
+
+        <p>We'll start by embedding five natural language descriptions and a folder of scene images.</p>
+
+<pre><code class="language-python">from transformers import CLIPProcessor, CLIPModel
+import torch
+
+device = "cpu"
+texts = [
+    "a peaceful place to be alone",
+    "a crowded and noisy street",
+    "a quiet reading corner",
+    "a place of worship or meditation",
+    "a vibrant public market"
+]
+
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+with torch.no_grad():
+    inputs = processor(text=texts, return_tensors="pt", padding=True).to(device)
+    text_embeddings = model.get_text_features(**inputs)
+</code></pre>
+
+        <p><strong>Example Text Embedding</strong></p>
+
+<pre><code class="language-python">([-0.0912,  0.0740, -0.1325, ...,  0.1032])  # 512-dimensional
+</code></pre>
+
+        <p><strong>Image Embedding</strong></p>
+
+<pre><code class="language-python">from PIL import Image
+import os
+from tqdm import tqdm
+
+image_folder = "scene_images"
+image_embeddings = []
+image_paths = []
+
+with torch.no_grad():
+    for file in tqdm(os.listdir(image_folder)):
+        if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+            path = os.path.join(image_folder, file)
+            image = Image.open(path).convert("RGB")
+            inputs = processor(images=image, return_tensors="pt").to(device)
+            image_embedding = model.get_image_features(**inputs)
+
+            image_embeddings.append(image_embedding)
+            image_paths.append(path)
+
+image_embeddings = torch.cat(image_embeddings, dim=0)
+</code></pre>
+
+        <p><strong>Example (image embedding):</strong></p>
+
+<pre><code class="language-python">([ 0.1023, -0.0852,  0.0315, ...,  0.1456])  # 512-dimensional
+</code></pre>
+
+        <p>With the raw embeddings generated, the next step is to normalize them so that comparison depends only on direction — not on the length of the vectors.</p>
+
+        <h3>Step 2: Normalizing the Embeddings</h3>
+
+        <p>CLIP compares vectors using cosine similarity, which depends only on their direction, not magnitude. To make this comparison meaningful, all embeddings must be normalized — that is, scaled to have a unit length (length = 1).</p>
+
+        <p>This step ensures the similarity score is purely based on how aligned the vectors are in space.</p>
+
+<pre><code class="language-python">import torch.nn.functional as F
+
+# Normalize text embeddings
+text_embeddings = F.normalize(text_embeddings, p=2, dim=1)
+
+# Normalize image embeddings
+image_embeddings = F.normalize(image_embeddings, p=2, dim=1)
+</code></pre>
+
+        <p>Example output (a normalized 512-dimensional vector):</p>
+
+<pre><code class="language-python">[-0.0785,  0.0637, -0.1141, ...,  0.0889]
+</code></pre>
+
+        <p>After normalization:</p>
+
+        <ul>
+          <li>Each vector still points in the same direction</li>
+          <li>But now all vectors have the same length (1.0)</li>
+          <li>So comparisons like cosine similarity are fair and consistent</li>
+        </ul>
+
+        <h3>Step 3: Computing the Similarity Matrix</h3>
+
+        <p>Now that the embeddings are normalized, we can measure how similar each text is to each image using cosine similarity.</p>
+
+        <p>Since all vectors are unit-length (thanks to normalization), cosine similarity is simply the dot product between vectors — no extra math required.</p>
+
+        <h4>What Is a Similarity Matrix?</h4>
+
+        <p>It's a grid where:</p>
+
+        <ul>
+          <li>Rows = text inputs (queries)</li>
+          <li>Columns = images</li>
+          <li>Each cell shows how similar a given text is to a given image</li>
+        </ul>
+
+        <p>A higher value means a stronger match.</p>
+
+        <h4>Compute Similarity Matrix</h4>
+
+<pre><code class="language-python"># Compute similarity matrix (text x image)
+similarity = text_embeddings @ image_embeddings.T  # shape: [5, 5]
+</code></pre>
+
+        <p>Here, <code>@</code> is matrix multiplication (dot product).</p>
+
+        <ul>
+          <li>If you have 5 texts and 5 images, you'll get a 5×5 matrix</li>
+          <li>Each entry <code>[i, j]</code> represents similarity between text <code>i</code> and image <code>j</code></li>
+        </ul>
+
+        <p><strong>Example (similarity scores)</strong></p>
+
+<pre><code class="language-python">[[0.92, 0.12, 0.05, 0.87, 0.09],
+ [0.11, 0.95, 0.08, 0.10, 0.84],
+ [0.89, 0.14, 0.91, 0.23, 0.10],
+ [0.13, 0.08, 0.11, 0.96, 0.15],
+ [0.05, 0.84, 0.07, 0.16, 0.93]]
+</code></pre>
+
+        <p>Each row corresponds to one text, and each column to one image. The highest value in each row shows which image best matches that text.</p>
+
+        <h3>Step 4: Retrieving the Best Matches</h3>
+
+        <p>In this step, we'll interpret the similarity scores computed earlier and retrieve the most relevant image for each input text. This mirrors how CLIP works during inference — by choosing the image with the highest similarity to the given text.</p>
+
+        <h4>How CLIP Makes the Match</h4>
+
+        <ul>
+          <li>For each text, CLIP looks at all similarity scores to the available images</li>
+          <li>It selects the image with the highest score — this is the best semantic match</li>
+        </ul>
+
+        <h3>Result</h3>
+
+        <div class="clip-results">
+
+          <figure class="clip-result">
+            <figcaption>
+              <strong>Queries:</strong>
+              "a peaceful place to be alone" &nbsp;·&nbsp;
+              "a crowded and noisy street"
+            </figcaption>
+            <img src="images/clip-retrieval/result-1-2.png" alt="Retrieved images for queries 1 and 2">
+          </figure>
+
+          <figure class="clip-result">
+            <figcaption>
+              <strong>Queries:</strong>
+              "a quiet reading corner" &nbsp;·&nbsp;
+              "a place of worship or meditation"
+            </figcaption>
+            <img src="images/clip-retrieval/result-3-4.png" alt="Retrieved images for queries 3 and 4">
+          </figure>
+
+          <figure class="clip-result">
+            <figcaption><strong>Query:</strong> "a vibrant public market"</figcaption>
+            <img src="images/clip-retrieval/result-5.png" alt="Retrieved image for query 5">
+          </figure>
+
+        </div>
+
+        <p>CLIP retrieves semantically matching images for each natural language query — without being trained on this task. It aligns meaning across text and vision using a shared embedding space.</p>
+
+        <h2>But How Does CLIP Know Which Text Matches Which Image?</h2>
+
+        <p>Seeing the retrieval results, it's tempting to think this matching process is just a clever trick — but what's happening behind the scenes is far more profound.</p>
+
+        <p>CLIP doesn't rely on traditional supervised training with labeled categories. Instead, it was trained on 400 million (image, text) pairs collected from the internet, learning to associate natural language with visual content at scale. But the real secret lies in how it was trained: using a method called contrastive learning.</p>
+
+        <h2>CLIP's Training: Contrastive Learning with InfoNCE Loss</h2>
+
+        <p>During training, CLIP is given batches of images and their corresponding captions. Its goal is to learn which text goes with which image — and which ones don't. This is achieved using a contrastive loss function called InfoNCE.</p>
+
+        <p>In each training batch:</p>
+
+        <ul>
+          <li>Every image is paired with one correct text (its caption)</li>
+          <li>The model computes the similarity between all images and all texts</li>
+          <li>It then learns to pull the correct image–text pairs closer together in the embedding space, and push all incorrect pairs apart</li>
+        </ul>
+
+        <p>This teaches CLIP to understand alignment not by category labels, but by context, meaning, and semantic intent. Whether the input is <em>"a peaceful place to be alone"</em> or <em>"a vibrant public market,"</em> CLIP learns to represent both the text and the visual scene in the same space — so matching becomes as simple as comparing vectors.</p>
+
+        <p>Because of this contrastive training setup, CLIP can generalize beyond its training data. It doesn't just recognize known classes — it understands natural language and can match it with images in a zero-shot way. That's why it works even when we give it totally free-form queries like moods, atmospheres, or places it's never seen before.</p>
+
+        <p>In short: CLIP doesn't memorize. It aligns — and that's what makes it so powerful.</p>
+
+        <p><strong>GitHub Repository:</strong> Check out the repo for the full code and setup: <a href="https://github.com/BhoomikaLohana/My-Path-to-understand-ML/tree/main/CLIP_for_Cross-Modal_Retrieval" target="_blank" rel="noopener noreferrer">github.com/BhoomikaLohana/My-Path-to-understand-ML/tree/main/CLIP_for_Cross-Modal_Retrieval</a></p>
+
+      </div>
+
+      <footer class="post-footer">
+        <a href="/blog.html" class="post-back">← All posts</a>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Bhoomika Lohana</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <!-- Prism.js (syntax highlighting + copy button) -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+</body>
+</html>

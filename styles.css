@@ -826,6 +826,43 @@ a { color: inherit; text-decoration: none; }
   padding: 0;
 }
 
+/* CLIP retrieval result grid */
+.clip-results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.clip-result {
+  margin: 0;
+  padding: 1rem;
+  background: var(--cream-card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.clip-result figcaption {
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.clip-result figcaption strong {
+  color: var(--terracotta);
+  margin-right: 0.3rem;
+}
+
+.clip-result img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
 .post-image img {
   display: block;
   max-width: 100%;
