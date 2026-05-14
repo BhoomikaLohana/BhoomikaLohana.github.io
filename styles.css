@@ -722,7 +722,8 @@ a { color: inherit; text-decoration: none; }
 }
 .post-body a:hover { text-decoration-color: var(--terracotta); }
 
-.post-body code {
+/* Inline code (when NOT inside a <pre> block) */
+.post-body :not(pre) > code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.9em;
   padding: 0.15rem 0.4rem;
@@ -731,21 +732,19 @@ a { color: inherit; text-decoration: none; }
   color: var(--terracotta);
 }
 
-.post-body pre {
-  background: var(--cream-deep);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 1.25rem;
-  overflow-x: auto;
-  margin: 1.5rem 0;
-  line-height: 1.5;
-  font-size: 0.92rem;
+/* Code blocks — Prism.js handles syntax colors; we tune spacing & shape */
+.post-body pre[class*="language-"] {
+  margin: 1.75rem 0;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  padding: 1.25rem 1.4rem;
+  box-shadow: 0 6px 20px rgba(45, 36, 28, 0.12);
 }
 
-.post-body pre code {
-  background: transparent;
-  padding: 0;
-  color: var(--ink);
+.post-body pre[class*="language-"] code {
+  font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, monospace;
+  font-size: 0.92em;
+  line-height: 1.6;
 }
 
 .post-cover {
