@@ -1,17 +1,17 @@
 :root {
-  /* Warm editorial palette */
-  --cream:       #f5efe4;
-  --cream-deep:  #ece3d3;
-  --cream-card:  #e4d5b0;
-  --ink:         #2d241c;
-  --ink-soft:    #5a4a3c;
+  /* Sage & cream palette */
+  --cream:       #f3f1e7;
+  --cream-deep:  #e9e5d8;
+  --cream-card:  #f7f5ec;
+  --ink:         #2f2a22;
+  --ink-soft:    #574b3d;
   --ink-faint:   #8f7e6c;
-  --line:        #ddd0b8;
-  --terracotta:  #b55a36;
-  --terracotta-soft: #e6a57c;
+  --line:        #e3ddcc;
+  --terracotta:  #6f8f6a;   /* primary accent — sage */
+  --terracotta-soft: #aac2a3;
   --teal:        #5d8680;
-  --gold:        #c99a57;
-  --deep:        #1f1812;
+  --gold:        #9a7a44;
+  --deep:        #1f1c16;
 
   /* Rubik's classic colors */
   --cube-white:  #f4efe1;
