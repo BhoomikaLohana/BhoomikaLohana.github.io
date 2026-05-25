@@ -14,9 +14,21 @@
     });
   }
 
-  /* ── Site-wide visitor counter (footer) ───────────────── */
+  /* ── Site-wide visitor counter (private — owner only) ──────
+     Every visit is still counted in the background. The number is
+     hidden from everyone by default (.visit-counter { display:none }).
+     The owner reveals it by visiting any page with "?stats" in the URL;
+     that preference is remembered in this browser afterwards. */
   var visitEl = document.getElementById("visit-count");
   if (visitEl) {
+    var line = visitEl.closest(".visit-counter");
+
+    // Owner unlock: visiting with ?stats turns the display on for this browser.
+    if (new URLSearchParams(location.search).has("stats")) {
+      localStorage.setItem("bl-show-visits", "1");
+    }
+    var ownerView = localStorage.getItem("bl-show-visits") === "1";
+
     var counted = localStorage.getItem("bl-visit-counted");
     // Increment once per browser; on later visits just read the total.
     var path = counted ? "/get/" : "/hit/";
@@ -24,12 +36,10 @@
       .then(function (d) {
         visitEl.textContent = Number(d.value || 0).toLocaleString();
         if (!counted) localStorage.setItem("bl-visit-counted", "1");
+        // Reveal the line only for the owner.
+        if (line && ownerView) line.style.display = "block";
       })
-      .catch(function () {
-        // If the service is unreachable, hide the line rather than show junk.
-        var line = visitEl.closest(".visit-counter");
-        if (line) line.style.display = "none";
-      });
+      .catch(function () { /* stays hidden */ });
   }
 
   /* ── Per-post like buttons ────────────────────────────── */
