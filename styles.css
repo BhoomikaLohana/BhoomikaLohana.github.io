@@ -887,6 +887,13 @@ a { color: inherit; text-decoration: none; }
   margin: 0 auto;
 }
 
+.post-body mark {
+  background: color-mix(in srgb, var(--cube-blue) 24%, transparent);
+  color: inherit;
+  padding: 0.05em 0.18em;
+  border-radius: 3px;
+}
+
 .post-footer {
   margin-top: 4rem;
   padding-top: 2rem;
