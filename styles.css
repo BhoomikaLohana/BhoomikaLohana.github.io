@@ -13,15 +13,9 @@
   --gold:        #9a7a44;
   --deep:        #1f1c16;
 
-  /* Rubik's classic colors */
-  --cube-white:  #f4efe1;
-  --cube-yellow: #e9c85a;
-  --cube-red:    #c0432a;
-  --cube-orange: #d87a2e;
-  --cube-blue:   #2c6e8a;
-  --cube-green:  #4a7a4c;
+  --cube-blue:   #2c6e8a; /* used in post-body mark highlight */
 
-  --serif: "Fraunces", Georgia, serif;
+--serif: "Fraunces", Georgia, serif;
   --sans:  "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -128,20 +122,15 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── Hero ───────────────────────────────────────────── */
 .hero {
-  max-width: 1240px;
+  max-width: 860px;
   margin: 0 auto;
   padding: 4rem 2rem 5rem;
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 4rem;
-  align-items: center;
 }
 
 .eyebrow {
   font-family: var(--sans);
   font-size: 1rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--ink);
   font-weight: 700;
   margin: 0 0 1.5rem;
@@ -165,6 +154,17 @@ a { color: inherit; text-decoration: none; }
 }
 
 .simple-section { margin-top: 2rem; }
+
+.section-view-all {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--terracotta);
+  float: right;
+  margin-top: 0.15rem;
+  transition: opacity 0.2s;
+}
+.section-view-all:hover { opacity: 0.75; }
 
 .simple-section h2 {
   font-family: var(--serif);
@@ -233,23 +233,10 @@ a { color: inherit; text-decoration: none; }
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
   opacity: 1;
 }
-.link-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--accent-color);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
 .link-btn:hover {
   transform: translateY(-2px);
-  border-color: var(--accent-color);
   box-shadow: 0 12px 28px rgba(45, 36, 28, 0.10);
 }
-.link-btn:hover::before { width: 100%; opacity: 0.08; }
-.link-btn:hover::after  { opacity: 0.04; }
 
 /* Per-platform accent colors */
 .link-btn.github   { --accent-color: #2d241c; }
@@ -273,11 +260,6 @@ a { color: inherit; text-decoration: none; }
   transition: background 0.25s ease, transform 0.25s ease;
 }
 
-.link-btn:hover .link-icon {
-  background: var(--accent-color);
-  color: var(--cream);
-  transform: rotate(-4deg) scale(1.05);
-}
 
 .link-icon svg {
   width: 15px;
@@ -320,11 +302,6 @@ a { color: inherit; text-decoration: none; }
   z-index: 1;
 }
 
-.link-btn:hover .link-arrow {
-  transform: translate(3px, -3px);
-  color: var(--accent-color);
-  opacity: 1;
-}
 
 @media (max-width: 900px) {
   .link-buttons { grid-template-columns: repeat(2, 1fr); }
@@ -384,27 +361,14 @@ a { color: inherit; text-decoration: none; }
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
   opacity: 1;
 }
-.research-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--accent-color);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
 .research-btn:hover {
   transform: translateY(-2px);
-  border-color: var(--accent-color);
   box-shadow: 0 12px 28px rgba(45, 36, 28, 0.10);
 }
-.research-btn:hover::before { width: 100%; opacity: 0.08; }
-.research-btn:hover::after  { opacity: 0.04; }
 
 .research-btn.arxiv   { --accent-color: var(--terracotta); }
-.research-btn.patent  { --accent-color: var(--teal); }
-.research-btn.dataset { --accent-color: #5d7a3a; }
+.research-btn.patent  { --accent-color: var(--terracotta); }
+.research-btn.dataset { --accent-color: var(--terracotta); }
 
 .research-btn .research-icon {
   width: 32px;
@@ -422,11 +386,6 @@ a { color: inherit; text-decoration: none; }
   margin-top: 2px;
 }
 
-.research-btn:hover .research-icon {
-  background: var(--accent-color);
-  color: var(--cream);
-  transform: rotate(-4deg) scale(1.05);
-}
 
 .research-btn .research-icon svg {
   width: 16px;
@@ -488,11 +447,6 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
 }
 
-.research-btn:hover .research-arrow {
-  transform: translate(3px, -3px);
-  color: var(--accent-color);
-  opacity: 1;
-}
 
 @media (max-width: 600px) {
   .content-section { padding: 1.5rem 1.25rem 3rem; }
@@ -555,7 +509,7 @@ a { color: inherit; text-decoration: none; }
   text-decoration: none !important;
   position: relative;
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .post-card::before {
@@ -564,17 +518,11 @@ a { color: inherit; text-decoration: none; }
   left: 0; top: 0; bottom: 0;
   width: 3px;
   background: var(--terracotta);
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
 }
 
 .post-card:hover {
   transform: translateY(-3px);
-  border-color: var(--terracotta);
   box-shadow: 0 12px 28px rgba(45, 36, 28, 0.08);
-}
-.post-card:hover::before {
-  width: 100%;
-  opacity: 0.06;
 }
 
 .post-card-meta {
@@ -912,200 +860,6 @@ a { color: inherit; text-decoration: none; }
   .post-card-title { font-size: 1.3rem; }
 }
 
-/* ─── Hero visual / threads ──────────────────────────── */
-.hero-visual {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  height: 260px;
-  margin-left: auto;
-  perspective: 1200px;
-  align-self: start;
-  margin-top: 0.5rem;
-}
-.threads {
-  position: absolute;
-  inset: 0;
-  opacity: 0.55;
-  filter: blur(0.3px);
-}
-.threads svg { width: 100%; height: 100%; }
-
-/* ─── Rubik's cube ───────────────────────────────────── */
-.cube-stage {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-}
-
-.cube-halo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 220px;
-  height: 220px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle,
-    rgba(245, 239, 228, 0.95) 0%,
-    rgba(245, 239, 228, 0.6) 45%,
-    transparent 70%);
-  box-shadow:
-    inset 0 0 60px rgba(181, 90, 54, 0.08),
-    0 20px 60px rgba(45, 36, 28, 0.12);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.cube {
-  --size: 180px;
-  position: relative;
-  width: var(--size);
-  height: var(--size);
-  transform-style: preserve-3d;
-  animation: cube-spin 6s linear infinite;
-  z-index: 2;
-}
-
-@keyframes cube-spin {
-  0%   { transform: rotateX(-20deg) rotateY(0deg)   rotateZ(0deg); }
-  50%  { transform: rotateX(-20deg) rotateY(180deg) rotateZ(5deg); }
-  100% { transform: rotateX(-20deg) rotateY(360deg) rotateZ(0deg); }
-}
-
-.face {
-  position: absolute;
-  width: var(--size);
-  height: var(--size);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows:    repeat(3, 1fr);
-  gap: 3px;
-  padding: 4px;
-  background: #1a140f;
-  border-radius: 10px;
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
-}
-
-.face.front  { transform: translateZ(calc(var(--size) / 2)); }
-.face.back   { transform: rotateY(180deg) translateZ(calc(var(--size) / 2)); }
-.face.right  { transform: rotateY(90deg)  translateZ(calc(var(--size) / 2)); }
-.face.left   { transform: rotateY(-90deg) translateZ(calc(var(--size) / 2)); }
-.face.top    { transform: rotateX(90deg)  translateZ(calc(var(--size) / 2)); }
-.face.bottom { transform: rotateX(-90deg) translateZ(calc(var(--size) / 2)); }
-
-.st {
-  border-radius: 6px;
-  box-shadow:
-    inset 0 2px 4px rgba(255,255,255,0.25),
-    inset 0 -2px 4px rgba(0,0,0,0.2);
-  animation: scramble 5s steps(1, end) infinite;
-}
-
-/* Solved-state colors per face */
-.face.front  .st { background: var(--cube-red); }
-.face.back   .st { background: var(--cube-orange); }
-.face.right  .st { background: var(--cube-blue); }
-.face.left   .st { background: var(--cube-green); }
-.face.top    .st { background: var(--cube-white); }
-.face.bottom .st { background: var(--cube-yellow); }
-
-/* Staggered scramble delays — each sticker goes through other colors then returns */
-.face .s1 { animation-delay: 0.0s; }
-.face .s2 { animation-delay: 0.15s; }
-.face .s3 { animation-delay: 0.3s; }
-.face .s4 { animation-delay: 0.45s; }
-.face .s5 { animation-delay: 0.6s; }
-.face .s6 { animation-delay: 0.75s; }
-.face .s7 { animation-delay: 0.9s; }
-.face .s8 { animation-delay: 1.05s; }
-.face .s9 { animation-delay: 1.2s; }
-
-/* Each face scrambles through a different color cycle, returning to solved */
-.face.front  .st { animation-name: scramble-red; }
-.face.back   .st { animation-name: scramble-orange; }
-.face.right  .st { animation-name: scramble-blue; }
-.face.left   .st { animation-name: scramble-green; }
-.face.top    .st { animation-name: scramble-white; }
-.face.bottom .st { animation-name: scramble-yellow; }
-
-/* Messy for ~70% of the cycle, then SNAP to solved and hold */
-@keyframes scramble-red {
-  0%   { background: var(--cube-blue); }
-  10%  { background: var(--cube-yellow); }
-  20%  { background: var(--cube-green); }
-  30%  { background: var(--cube-white); }
-  40%  { background: var(--cube-orange); }
-  50%  { background: var(--cube-blue); }
-  60%  { background: var(--cube-green); }
-  70%, 100% { background: var(--cube-red); }   /* solved, held */
-}
-@keyframes scramble-orange {
-  0%   { background: var(--cube-green); }
-  10%  { background: var(--cube-white); }
-  20%  { background: var(--cube-blue); }
-  30%  { background: var(--cube-red); }
-  40%  { background: var(--cube-yellow); }
-  50%  { background: var(--cube-green); }
-  60%  { background: var(--cube-blue); }
-  70%, 100% { background: var(--cube-orange); }
-}
-@keyframes scramble-blue {
-  0%   { background: var(--cube-red); }
-  10%  { background: var(--cube-green); }
-  20%  { background: var(--cube-white); }
-  30%  { background: var(--cube-orange); }
-  40%  { background: var(--cube-yellow); }
-  50%  { background: var(--cube-red); }
-  60%  { background: var(--cube-white); }
-  70%, 100% { background: var(--cube-blue); }
-}
-@keyframes scramble-green {
-  0%   { background: var(--cube-yellow); }
-  10%  { background: var(--cube-red); }
-  20%  { background: var(--cube-orange); }
-  30%  { background: var(--cube-blue); }
-  40%  { background: var(--cube-white); }
-  50%  { background: var(--cube-yellow); }
-  60%  { background: var(--cube-red); }
-  70%, 100% { background: var(--cube-green); }
-}
-@keyframes scramble-white {
-  0%   { background: var(--cube-orange); }
-  10%  { background: var(--cube-blue); }
-  20%  { background: var(--cube-red); }
-  30%  { background: var(--cube-yellow); }
-  40%  { background: var(--cube-green); }
-  50%  { background: var(--cube-orange); }
-  60%  { background: var(--cube-blue); }
-  70%, 100% { background: var(--cube-white); }
-}
-@keyframes scramble-yellow {
-  0%   { background: var(--cube-white); }
-  10%  { background: var(--cube-orange); }
-  20%  { background: var(--cube-red); }
-  30%  { background: var(--cube-green); }
-  40%  { background: var(--cube-blue); }
-  50%  { background: var(--cube-white); }
-  60%  { background: var(--cube-orange); }
-  70%, 100% { background: var(--cube-yellow); }
-}
-
-.cube-caption {
-  position: absolute;
-  bottom: 8%;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 0.95rem;
-  color: var(--ink-soft);
-  letter-spacing: 0.01em;
-  transition: opacity 0.3s ease;
-  z-index: 3;
-}
 
 /* ─── Featured articles ──────────────────────────────── */
 .featured {
@@ -1294,12 +1048,6 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 900px) {
   .nav { padding: 1rem 1.25rem; }
   .nav-links { gap: 1.25rem; font-size: 0.88rem; }
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-    padding: 2.5rem 1.25rem 4rem;
-  }
-  .hero-visual { margin: 0 auto; max-width: 340px; }
-  .cube { --size: 140px; }
+  .hero { padding: 2.5rem 1.25rem 4rem; }
   .card-row { grid-template-columns: 1fr; }
 }
