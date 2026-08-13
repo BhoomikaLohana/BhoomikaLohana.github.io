@@ -93,7 +93,9 @@
 
         <p>Only then does the system cut back to fit the token budget, dropping duplicates, weak scores and anything structurally broken.</p>
 
-        <p>What I find interesting is the shape. Retrieval narrows, the middle steps widen, packing narrows again. Standard RAG only runs the first and last of those. Whatever the search missed stays missed, because nothing in the pipeline is ever looking to add.</p>
+        <p>What I find interesting is the shape of it. Retrieval cuts a large corpus down to a handful of chunks. The middle steps then put material back, neighbouring chunks and the rest of the table. Packing cuts again, this time to fit the token limit.</p>
+
+        <p>Standard RAG only has the two cutting steps. There is no point in the pipeline where anything gets added back, so whatever the search missed on the first pass stays missed.</p>
 
         <p>The design constraint underneath all of it is that the model is small. The whole system runs on a locally hosted 14B generator with an off the shelf embedder and no external APIs, which is part of the argument. Context built properly is doing work that would otherwise fall to model scale.</p>
 
