@@ -80,7 +80,7 @@
 
         <p>At ingestion, they tag things so the pieces can find each other later. Each table gets an ID and is split into numbered parts, so part 4 still knows it belongs with parts 1 through 3. Text gets reassembled into full paragraphs before it is cut into chunks, using blank lines, indentation and bullet continuity to work out which lines belong together, so the cut lands on a boundary that means something. Tables, images and OCR text all get converted into text and stored in one shared index, but each chunk keeps a marker for what it originally was, along with its page, its heading and its position in the document.</p>
 
-        <p>None of that improves retrieval. It is all setup.</p>
+        <p>None of that makes the search itself any better. It exists so that later, when a chunk comes back on its own, the system can tell what it was part of.</p>
 
         <figure class="post-image">
           <img src="images/your-rag-didnt-hallucinate/ldsrag-figure1.png" alt="Figure 1 from Li and Okolie (2026) showing the L-DSRAG ingestion pipeline: structure-preserving chunking, table ID tagging, and cross-modal conversion into a shared index.">
