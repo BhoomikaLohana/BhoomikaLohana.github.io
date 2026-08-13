@@ -152,21 +152,11 @@
 
         <p><strong>What I'm Taking Forward</strong></p>
 
-        <p>The paper left me with three things.</p>
+        <p>Context construction is a stage, not a formatting step. Retrieval decides what is available and generation decides what gets said, but that assembly in between decides what the model can actually use. Structure has to survive ingestion or it cannot be recovered later, since the table ID that pulls a full table back at query time only works because it was assigned before any question arrived. Whatever gets flattened during chunking is gone for good.</p>
 
-        <ul>
-          <li><strong>From the framing:</strong> context construction is a stage, not a formatting step. Retrieval decides what is available and generation decides what gets said, but the assembly in between decides what the model can actually use. It had never occurred to me to treat it as something you design.</li>
-          <li><strong>From the method:</strong> structure has to survive ingestion or it cannot be recovered later. The table ID that pulls a full table back at query time only works because it was assigned before any question arrived. Whatever gets flattened during chunking is gone for good.</li>
-          <li><strong>From the results:</strong> context precision measures the wrong unit. It scores chunks one at a time, and some evidence only means anything in groups. A header row will never score well on its own. That is not a flaw in the header row. Their ablation also showed where the gain sits. Chunking, retrieval, graph expansion and table grouping together moved faithfulness from 0.750 to 0.850. Pruning, the step that filters out weakly related evidence, added the remaining 0.050.</li>
-        </ul>
+        <p>And context precision measures the wrong unit. It looks at each retrieved chunk and asks whether that chunk is relevant on its own. But the header row is not relevant on its own. It only matters because of what it does to the rows underneath it. Score it in isolation and it looks like noise. That is not a flaw in the header row.</p>
 
-        <p>The open question I keep coming back to is how you would measure structural completeness at all. Faithfulness and answer relevancy are asking about the answer. Context recall and precision are asking about chunks. Chunk level precision punishes the header row, because relevance is scored per piece and a header is not relevant on its own. Context recall gets closer, since it asks whether everything needed was present, but it was judged manually here across 100 questions and it does not separate missing a fact from missing the frame that makes the fact readable.</p>
-
-        <p>One direction I want to look into: if the evidence carries structural metadata already, table IDs, part counts, heading parents, then completeness might be checkable directly rather than judged. A table group that arrives with 3 of 5 parts is measurably incomplete, and no relevance score is needed to know that.</p>
-
-        <p>Whether that is a useful signal or just a proxy for the same thing recall already captures is what I want to find out.</p>
-
-        <p>The example I started with was a retrieval that looked correct. Nothing in the retriever's own scoring had any way to see what was missing. The header row was sitting one chunk away the whole time.</p>
+        <p>What this paper taught me is that the prompt is something you build. I had been treating it as whatever falls out of a ranked list, which is why I kept looking at the retriever and the model when something went wrong. The header row was sitting one chunk away the whole time.</p>
 
         <p><strong>References</strong></p>
 
