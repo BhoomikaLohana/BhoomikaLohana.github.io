@@ -48,7 +48,7 @@
 
       <div class="post-body">
 
-        <p>This came up in my weekly reading, and it shifted how I think about hallucination in RAG. I had been treating it as a retrieval quality problem. Retrieve better chunks, get better answers.</p>
+        <p>I used to think hallucination in RAG was a retrieval quality problem. Retrieve better chunks, get better answers.</p>
 
         <p>The example that moved me off that is simple enough.</p>
 
@@ -64,7 +64,7 @@
 
         <p>What I kept coming back to is that nothing in this pipeline failed. The retriever found relevant content. The model read what it was given. The failure happened in between, in the part where retrieved chunks get assembled into a prompt, and I had never thought of that as a place where anything happens.</p>
 
-        <p>The paper is <em>Hallucination in Retrieval-Augmented Generation is a Context Construction Problem</em>, from IAIT 2026, and that middle step is what it is about.</p>
+        <p>The paper I was reading is <em>Hallucination in Retrieval-Augmented Generation is a Context Construction Problem</em>, from IAIT 2026, and that middle step is what it is about.</p>
 
         <p>The obvious answer is graph RAG. Link related pieces during ingestion, walk outward from whatever matched, and the header comes back through its connection to the rows.</p>
 
