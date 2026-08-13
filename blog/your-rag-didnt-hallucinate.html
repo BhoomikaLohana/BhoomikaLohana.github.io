@@ -55,7 +55,7 @@
         <p>Ask a RAG system about a company's 2019 revenue. It searches for chunks that resemble the question and it finds the right ones. The rows with the figures, the company name sitting right there. Nothing about the retrieval looks wrong.</p>
 
         <figure class="post-image">
-          <img src="images/your-rag-didnt-hallucinate/broken-table.png" alt="A table split across chunks during ingestion, with the header row separated from the data rows it belongs to, illustrating how a similarity search retrieves the rows but misses the header.">
+          <img src="images/your-rag-didnt-hallucinate/broken-table.png" alt="Two panels side by side. On the left, what the retriever returned: three revenue figures for Walmart U.S., Walmart International and Sam's Club, with an empty dashed box where the header row should be. On the right, what the document actually had: the same three figures under a highlighted header reading &quot;in millions, FY ended Jan 31, 2019&quot;.">
         </figure>
 
         <p>The header row stayed behind. It has no company name and no verb, nothing that looks like the question, so it scored low on similarity and did not make the cut.</p>
@@ -83,8 +83,8 @@
         <p>None of that makes the search itself any better. It exists so that later, when a chunk comes back on its own, the system can tell what it was part of.</p>
 
         <figure class="post-image">
-          <img src="images/your-rag-didnt-hallucinate/ldsrag-figure1.png" alt="Figure 1 from Li and Okolie (2026) showing the L-DSRAG ingestion pipeline: structure-preserving chunking, table ID tagging, and cross-modal conversion into a shared index.">
-          <figcaption>Figure 1 from Li and Okolie (2026), licensed under CC BY 4.0.</figcaption>
+          <img src="images/your-rag-didnt-hallucinate/ldsrag-figure1.png" alt="The L-DSRAG pipeline. The top row runs at ingestion: heterogeneous documents, parsing with OCR and table extraction, structure-aware chunking, modality normalization, cross-modal knowledge graph construction, and the combined knowledge graph and vector index. The lower flow runs at query time: user query, query embedding, hybrid retrieval combining dense search with graph traversal and reranking, table-aware grouping and all-parts recovery, cross-modal pruning with constraint-driven context packing, the final evidence context, local LLM answer generation with Qwen3-14B, and a grounded answer or abstention.">
+          <figcaption>Figure 1 from Li and Okolie (2026)</figcaption>
         </figure>
 
         <p>The payoff comes at query time. Search runs twice, once on embedding similarity and once through a reranker that reads the question and the candidate together, and the two scores get combined. Then instead of passing those hits straight to the model, three things happen to them.</p>
@@ -92,7 +92,7 @@
         <ol>
           <li>They pull in the chunks sitting next to a match in the original document, on the reasoning that the missing half of an answer is usually a paragraph away from the half you found, and similarity search will not surface it because it does not look like the question.</li>
           <li>They walk the graph outward from those matches to find linked evidence, on a leash, so a neighbour only gets in if it is a few steps away and still close in meaning, with a cap on how many can join.</li>
-          <li>And if the search hit one part of a table, the table ID pulls the whole thing back, header and units included, and it goes into the prompt as one block or does not go in at all. Never half a table.</li>
+          <li>If the search hit one part of a table, the table ID pulls the whole thing back, header and units included, and it goes into the prompt as one block or does not go in at all. Never half a table.</li>
         </ol>
 
         <p>Only then does the system cut back to fit the token budget, dropping duplicates, weak scores and anything structurally broken.</p>
