@@ -66,7 +66,7 @@
 
         <p>The paper I was reading is <em>Hallucination in Retrieval-Augmented Generation is a Context Construction Problem</em>, from IAIT 2026, and that middle step is what it is about.</p>
 
-        <p>The obvious answer is graph RAG. Link related pieces during ingestion, walk outward from whatever matched, and the header comes back through its connection to the rows.</p>
+        <p>The obvious answer is graph RAG. Instead of storing chunks as a flat pile, you store them as a graph, with links between pieces that belong together. The header row gets a link to the rows underneath it. So when the search hits those rows, you follow the link and the header comes back with them, even though it never scored well on its own.</p>
 
         <p>That does work for this case. But the paper's point is that walking outward also pulls in loosely connected material, and improved coverage does not mean improved context. You searched harder and got a messier pile. The evidence stopped being missing and started being buried.</p>
 
