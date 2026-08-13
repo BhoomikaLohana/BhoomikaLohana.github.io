@@ -64,7 +64,7 @@
 
         <p>What I kept coming back to is that nothing in this pipeline failed. The retriever found relevant content. The model read what it was given. The failure happened in between, in the part where retrieved chunks get assembled into a prompt, and I had never thought of that as a place where anything happens.</p>
 
-        <p>The paper I was reading is <em>Hallucination in Retrieval-Augmented Generation is a Context Construction Problem</em>, from IAIT 2026, and that middle step is what it is about.</p>
+        <p>The paper is <em>Hallucination in Retrieval-Augmented Generation is a Context Construction Problem</em>, from IAIT 2026. Context construction is their name for that middle step, where retrieved chunks get assembled into the prompt. Not whatever the search returned, but the final set of evidence that gets selected, grouped, ordered and fitted into the token budget.</p>
 
         <p>The obvious answer is graph RAG. Instead of storing chunks as a flat pile, you store them as a graph, with links between pieces that belong together. The header row gets a link to the rows underneath it. So when the search hits those rows, you follow the link and the header comes back with them, even though it never scored well on its own.</p>
 
